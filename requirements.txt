@@ -1,0 +1,5 @@
+numpy
+scipy
+pyyaml
+transforms3d
+python-chess>=1.11

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>franka_chess_arm</name>
+  <version>0.1.0</version>
+  <description>ROS2 bridge for Franka Panda chess digital twin in Isaac Sim</description>
+
+  <maintainer email="you@example.com">Your Name</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+</package>

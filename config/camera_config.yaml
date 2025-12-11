@@ -1,0 +1,9 @@
+name: "chess_cam"
+prim_path: "/World/ChessCamera"
+resolution: [640, 480]
+fov_deg: 60.0
+
+# Camera pose in world coordinates
+position_world: [0.6, 0.0, 0.6]
+look_at_world: [0.5, 0.0, 0.0]
+up_world: [0.0, 0.0, 1.0]

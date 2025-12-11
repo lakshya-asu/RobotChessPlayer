@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chess-arm"
+version = "0.1.0"
+description = "Franka Panda chess-playing digital twin in Isaac Sim"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+license = { file = "LICENSE" }
+dependencies = [
+  "numpy",
+  "scipy",
+  "pyyaml",
+  "transforms3d",
+  "python-chess>=1.11"
+]
+
+[tool.setuptools]
+packages = ["chess_arm"]

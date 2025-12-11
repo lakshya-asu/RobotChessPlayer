@@ -1,0 +1,13 @@
+# World pose of the bottom-left square (a1) corner
+origin_world: [0.5, 0.0, 0.0]      # meters
+
+# Unit vectors in world frame
+x_axis_world: [0.0, 1.0, 0.0]      # from a1 towards h1
+y_axis_world: [1.0, 0.0, 0.0]      # from a1 towards a8
+
+square_size: 0.038                  # ~38mm per square
+piece_height: 0.02                  # nominal piece height offset
+
+# Safe approach/retreat distances along board normal
+approach_offset: 0.10
+retreat_offset: 0.10

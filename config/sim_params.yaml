@@ -1,0 +1,11 @@
+time_step: 0.01          # seconds
+physics_substeps: 4
+gravity: [0.0, 0.0, -9.81]
+
+franka:
+  prim_path: "/Franka"
+  default_joint_positions: [0.0, -0.4, 0.0, -2.0, 0.0, 2.0, 0.8, 0.04, 0.04]
+
+board:
+  prim_path: "/World/ChessBoard"
+  piece_set_prim_path: "/World/ChessPieces"
