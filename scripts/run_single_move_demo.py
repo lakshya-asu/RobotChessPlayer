@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import numpy as np
 import yaml
+import chess
 
+from chess_arm.sim.digital_twin import FrankaChessDigitalTwin
 from chess_arm.sim.board_env import ChessBoardEnv
 from chess_arm.utils.transforms import BoardCalibration
 from chess_arm.utils.logging_utils import configure_logging
-from chess_arm.perception.vision_sim import SimulatedChessPerception
+from chess_arm.chess.move_mapping import move_to_square_names
 
 # todo: adjust SimulationApp import if Isaac Sim version exposes it via omni.isaac.kit instead
 from isaacsim import SimulationApp  # type: ignore[import]
@@ -23,14 +26,27 @@ def load_yaml(path: Path):
         return yaml.safe_load(f)
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Run a single chess move with the Franka digital twin in Isaac Sim.",
+    )
+    parser.add_argument(
+        "--move",
+        type=str,
+        default="e2e4",
+        help="UCI move string to execute (e.g. e2e4, g1f3).",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
     configure_logging()
+    args = parse_args()
 
     root = Path(__file__).resolve().parents[1]
 
     sim_cfg = load_yaml(root / "config" / "sim_params.yaml")
     board_cfg_raw = load_yaml(root / "config" / "board_config.yaml")
-    camera_cfg_raw = load_yaml(root / "config" / "camera_config.yaml")
 
     calib = BoardCalibration(
         origin_world=np.array(board_cfg_raw["origin_world"], dtype=float),
@@ -54,43 +70,29 @@ def main() -> None:
     if board_usd.exists() and pieces_usd.exists():
         board_env.load_assets(board_usd=board_usd, pieces_usd=pieces_usd)
 
-    # Simulated perception
-    perception = SimulatedChessPerception.from_config(
-        calib=calib,
-        camera_cfg=camera_cfg_raw,
-    )
+    # Franka digital twin
+    twin = FrankaChessDigitalTwin.create(world=world, config=sim_cfg, calib=calib)
 
     world.reset()
 
-    steps = 0
-    observed_poses = None
+    # Parse UCI move and map to algebraic square names
+    move = chess.Move.from_uci(args.move)
+    from_square, to_square = move_to_square_names(move)
+
+    # Plan move (now with IK-based joint trajectory when available)
+    twin.plan_move_squares(from_square=from_square, to_square=to_square)
+
+    # Run sim until trajectory is done, then a few extra frames
+    steps_after_done = 100
 
     while simulation_app.is_running():
         world.step(render=True)
-        perception.capture()
-        steps += 1
+        twin.step(physics_dt)
 
-        # Wait a small number of frames before estimating poses
-        if steps == 60:
-            observed_poses = perception.estimate_piece_poses()
-            new_calib = perception.correct_board_calibration(observed_poses)
-
-            print("Original board origin_world:", calib.origin_world.tolist())
-            print("Estimated board origin_world:", new_calib.origin_world.tolist())
-            print(
-                "Estimated translation offset:",
-                (new_calib.origin_world - calib.origin_world).tolist(),
-            )
-
-            calibrated_cfg = dict(board_cfg_raw)
-            calibrated_cfg["origin_world"] = new_calib.origin_world.tolist()
-
-            out_path = root / "config" / "board_config_calibrated.yaml"
-            with out_path.open("w") as f:
-                yaml.safe_dump(calibrated_cfg, f)
-
-            print("Wrote calibrated board config to:", str(out_path))
-            break
+        if not twin.has_active_trajectory():
+            steps_after_done -= 1
+            if steps_after_done <= 0:
+                break
 
     simulation_app.close()
 

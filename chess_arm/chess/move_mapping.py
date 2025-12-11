@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
+import chess
 
 from chess_arm.utils.transforms import BoardCalibration, square_center_world
 
@@ -48,3 +49,20 @@ def make_move_waypoints(
         place_to=place_to,
         retreat_to=retreat_to,
     )
+
+
+def move_to_square_names(move: chess.Move) -> Tuple[str, str]:
+    """
+    Convert a python-chess Move into (from_square, to_square) algebraic names.
+    """
+    from_sq = chess.square_name(move.from_square)
+    to_sq = chess.square_name(move.to_square)
+    return from_sq, to_sq
+
+
+def uci_to_square_names(uci: str) -> Tuple[str, str]:
+    """
+    Convert a UCI string (e.g. 'e2e4') into (from_square, to_square) names.
+    """
+    move = chess.Move.from_uci(uci)
+    return move_to_square_names(move)
