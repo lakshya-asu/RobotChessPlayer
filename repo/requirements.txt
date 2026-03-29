@@ -1,0 +1,5 @@
+numpy>=1.24
+PyYAML>=6.0
+spatialmath-python==1.0.5
+roboticstoolbox-python==1.0.3
+chess>=1.11

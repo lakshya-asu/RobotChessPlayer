@@ -1,0 +1,37 @@
+{
+  "engines": [
+    {
+      "name": "stockfish",
+      "legal_moves": 4,
+      "total_positions": 4,
+      "mean_ms": 50.01322224852629,
+      "median_ms": 50.01286399492528,
+      "reproducible_positions": 3
+    },
+    {
+      "name": "sunfish",
+      "legal_moves": 4,
+      "total_positions": 4,
+      "mean_ms": 50.00734876084607,
+      "median_ms": 50.00751900370233,
+      "reproducible_positions": 4
+    }
+  ],
+  "planner": {
+    "total_cases": 4,
+    "successful_cases": 4,
+    "planning_success_rate": 1.0,
+    "invalid_ik_rejections": 0,
+    "collision_rejections": 0,
+    "mean_stage_count": 9,
+    "mean_planning_ms": 0.6207967453519814
+  },
+  "sequence": {
+    "total_moves": 6,
+    "completed_moves": 6,
+    "mean_planning_ms": 0.389843664985771,
+    "mean_stages_per_move": 6,
+    "estimated_execution_latency_ms": 6000.0,
+    "estimated_end_to_end_ms": 6000.389843664986
+  }
+}

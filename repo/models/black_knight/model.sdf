@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="black_knight">
+    <static>false</static>
+    <link name="piece">
+      <inertial>
+        <mass>0.050</mass>
+        <inertia>
+          <ixx>0.000016</ixx>
+          <iyy>0.000016</iyy>
+          <izz>0.000010</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <pose>0 0 0.0265 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.030 0.028 0.053</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://chess_piece_meshes/meshes/knight.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.16 0.16 0.18 1</ambient>
+          <diffuse>0.16 0.16 0.18 1</diffuse>
+          <specular>0.08 0.08 0.08 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

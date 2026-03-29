@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="white_pawn">
+    <static>false</static>
+    <link name="piece">
+      <inertial>
+        <mass>0.035</mass>
+        <inertia>
+          <ixx>0.000010</ixx>
+          <iyy>0.000010</iyy>
+          <izz>0.000006</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <pose>0 0 0.020 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.014</radius>
+            <length>0.040</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://chess_piece_meshes/meshes/pawn.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.88 1</ambient>
+          <diffuse>0.93 0.92 0.88 1</diffuse>
+          <specular>0.20 0.20 0.20 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

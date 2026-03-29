@@ -1,0 +1,21 @@
+/**:
+  ros__parameters:
+    sim_backend: ros_gz
+    engine_backend: stockfish
+    engine_executable: ""
+    engine_think_time_sec: 0.25
+    square_size_m: 0.076
+    board_origin: [0.235, -0.266, 0.31]
+    hover_height_m: 0.12
+    pickup_height_m: 0.015
+    move_time_sec: 1.0
+    execution_timeout_sec: 45.0
+    planner_backend: moveit
+    white_executor_action_name: /white/execute_move
+    planned_trajectory_topic: /white/planned_trajectory
+    execution_feedback_topic: /white/execution_feedback
+    home_joint_positions: [0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785]
+    home_move_time_sec: 2.0
+    isaac_execution_result_topic: /isaac/execution_result
+    simulate_isaac_completion: false
+    isaac_completion_padding_sec: 0.05

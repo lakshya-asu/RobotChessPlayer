@@ -1,0 +1,2 @@
+string move_id
+trajectory_msgs/JointTrajectory trajectory

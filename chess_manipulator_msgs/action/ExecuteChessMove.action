@@ -1,0 +1,8 @@
+string uci_move
+---
+bool success
+string final_fen
+string message
+---
+string stage
+float32 progress

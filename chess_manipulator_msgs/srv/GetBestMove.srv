@@ -1,0 +1,5 @@
+string fen
+float32 think_time_sec
+---
+string uci_move
+string engine_name
