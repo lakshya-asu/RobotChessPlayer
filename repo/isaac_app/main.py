@@ -16,7 +16,7 @@ def _bootstrap_pythonpath() -> None:
 
 _bootstrap_pythonpath()
 
-from isaacsim import SimulationApp
+from isaac_app.compat import ISAAC_API_FLAVOR, SimulationApp, enable_ros2_bridge
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -48,14 +48,13 @@ def main(argv: Tuple[str, ...] | None = None) -> int:
     simulation_app = SimulationApp({"renderer": args.renderer, "headless": args.headless})
 
     import omni.timeline
-    from isaacsim.core.utils.extensions import enable_extension
 
     from isaac_app.chessboard import BoardGeometry
     from isaac_app.board_sync import IsaacBoardStateNode
     from isaac_app.scene import ChessIsaacScene, SceneConfig
     from isaac_app.trajectory_executor import IsaacTrajectoryExecutor
 
-    enable_extension("isaacsim.ros2.bridge")
+    enable_ros2_bridge()
     simulation_app.update()
 
     import rclpy
@@ -93,6 +92,7 @@ def main(argv: Tuple[str, ...] | None = None) -> int:
         status_topic=args.status_topic,
         execution_result_topic=args.execution_result_topic,
     )
+    executor.get_logger().info(f"Isaac compatibility mode: {ISAAC_API_FLAVOR}")
     board_state_node = None
     if args.sync_board_state:
         board_state_node = IsaacBoardStateNode(scene=scene, board_topic=args.board_state_topic)

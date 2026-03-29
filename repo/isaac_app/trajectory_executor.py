@@ -7,13 +7,13 @@ from typing import Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 import omni.timeline
-from isaacsim.core.utils.types import ArticulationAction
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
 from trajectory_msgs.msg import JointTrajectory
 
 from chess_manipulator.sim import encode_isaac_result
+from isaac_app.compat import ArticulationAction
 
 
 JOINT_NAMES = [

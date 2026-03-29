@@ -1,5 +1,13 @@
 # Isaac Sim Pivot Plan
 
+## Locked Decisions
+
+- Robot first: Franka Panda
+- Isaac version: 4.2.0
+- Install style: native local install in the workspace
+- Default local path: `third_party/isaac-sim-4.2.0`
+- AR4 switch: only if Panda-on-Isaac becomes the real blocker
+
 ## Goal
 
 Pivot the active demo path from `ros_gz` / Gazebo Harmonic to NVIDIA Isaac Sim while preserving as much of the existing stack as possible:

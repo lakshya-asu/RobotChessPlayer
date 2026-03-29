@@ -5,6 +5,7 @@ import os
 import xacro
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
@@ -18,6 +19,11 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            DeclareLaunchArgument(
+                "simulate_isaac_completion",
+                default_value="false",
+                description="Keep false for native Isaac Sim 4.2 execution. Enable only for ROS-side smoke tests.",
+            ),
             Node(
                 package="chess_manipulator",
                 executable="isaac_bridge",

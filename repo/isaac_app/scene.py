@@ -7,21 +7,31 @@ from typing import Optional
 
 import numpy as np
 
-from isaacsim.core.api import World
-from isaacsim.core.api.objects import FixedCuboid, VisualCapsule, VisualCuboid, VisualCylinder, VisualSphere
-from isaacsim.core.utils import rotations, viewports
-from isaacsim.core.utils.prims import get_prim_at_path
-from isaacsim.core.utils.stage import add_reference_to_stage
-from isaacsim.robot.manipulators import SingleManipulator
-from isaacsim.robot.manipulators.grippers import ParallelGripper
-from isaacsim.storage.native import get_assets_root_path
 from pxr import Gf, UsdGeom
 
 from .chessboard import BoardGeometry, board_map_from_fen, piece_color, square_color
+from .compat import (
+    FixedCuboid,
+    ParallelGripper,
+    SingleManipulator,
+    VisualCapsule,
+    VisualCuboid,
+    VisualCylinder,
+    VisualSphere,
+    World,
+    add_reference_to_stage,
+    get_assets_root_path,
+    get_prim_at_path,
+    rotations,
+    viewports,
+)
 
 
 FRANKA_STAGE_PATH = "/World/Franka"
-FRANKA_USD_PATH = "/Isaac/Robots/FrankaRobotics/FrankaPanda/franka.usd"
+FRANKA_USD_CANDIDATES = (
+    "/Isaac/Robots/FrankaRobotics/FrankaPanda/franka.usd",
+    "/Isaac/Robots/Franka/franka.usd",
+)
 
 
 @dataclass
@@ -249,10 +259,21 @@ class ChessIsaacScene:
         if assets_root_path is None:
             raise RuntimeError("Could not locate the Isaac Sim assets root.")
 
-        add_reference_to_stage(
-            usd_path=assets_root_path + FRANKA_USD_PATH,
-            prim_path=FRANKA_STAGE_PATH,
-        )
+        franka_usd_path = None
+        for candidate in FRANKA_USD_CANDIDATES:
+            try:
+                add_reference_to_stage(
+                    usd_path=assets_root_path + candidate,
+                    prim_path=FRANKA_STAGE_PATH,
+                )
+                franka_usd_path = candidate
+                break
+            except Exception:
+                continue
+        if franka_usd_path is None:
+            raise RuntimeError(
+                "Could not resolve a Franka Panda USD asset in the active Isaac Sim installation."
+            )
         robot = get_prim_at_path(FRANKA_STAGE_PATH)
         if robot.IsValid():
             robot.GetVariantSet("Gripper").SetVariantSelection("AlternateFinger")
