@@ -1,6 +1,6 @@
 /**:
   ros__parameters:
-    sim_backend: ros_gz
+    sim_backend: isaac
     engine_backend: stockfish
     engine_executable: ""
     engine_think_time_sec: 0.25

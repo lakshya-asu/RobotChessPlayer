@@ -5,17 +5,42 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 WORKSPACE_ROOT="$(cd -- "${REPO_ROOT}/.." && pwd)"
 PROJECT_LOCAL_ISAAC_ROOT="${WORKSPACE_ROOT}/third_party/isaac-sim-4.2.0"
-LEGACY_ISAAC_ROOT="${HOME}/snydrone_ws/isaacsim"
-ISAAC_ROOT="${ISAAC_ROOT:-${PROJECT_LOCAL_ISAAC_ROOT}}"
 
-if [ ! -d "${ISAAC_ROOT}" ] && [ "${ISAAC_ROOT}" = "${PROJECT_LOCAL_ISAAC_ROOT}" ] && [ -d "${LEGACY_ISAAC_ROOT}" ]; then
-  ISAAC_ROOT="${LEGACY_ISAAC_ROOT}"
-fi
+resolve_isaac_root() {
+  if [ -n "${ISAAC_ROOT:-}" ]; then
+    printf '%s' "${ISAAC_ROOT}"
+    return
+  fi
+
+  local candidates=(
+    "${PROJECT_LOCAL_ISAAC_ROOT}"
+    "${WORKSPACE_ROOT}/isaac-sim-4.2.0"
+    "${HOME}/isaacsim-4.2.0"
+    "${HOME}/isaacsim"
+    "${HOME}/snydrone_ws/isaacsim"
+  )
+  local candidate=""
+  for candidate in "${candidates[@]}"; do
+    if [ -d "${candidate}" ]; then
+      printf '%s' "${candidate}"
+      return
+    fi
+  done
+
+  printf '%s' "${PROJECT_LOCAL_ISAAC_ROOT}"
+}
+
+ISAAC_ROOT="$(resolve_isaac_root)"
 
 if [ ! -d "${ISAAC_ROOT}" ]; then
   cat >&2 <<EOF
 Isaac Sim not found.
 Expected path: ${PROJECT_LOCAL_ISAAC_ROOT}
+Also checked:
+  ${WORKSPACE_ROOT}/isaac-sim-4.2.0
+  ${HOME}/isaacsim-4.2.0
+  ${HOME}/isaacsim
+  ${HOME}/snydrone_ws/isaacsim
 Override with: ISAAC_ROOT=/path/to/isaac-sim-4.2.0 ./scripts/run_isaac_demo.sh
 EOF
   exit 1

@@ -75,7 +75,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            DeclareLaunchArgument("sim_backend", default_value="ros_gz"),
+            DeclareLaunchArgument("sim_backend", default_value="isaac"),
             DeclareLaunchArgument("rviz", default_value="false"),
             DeclareLaunchArgument("engine_backend", default_value="stockfish"),
             DeclareLaunchArgument("engine_executable", default_value=""),

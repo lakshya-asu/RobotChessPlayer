@@ -1,7 +1,7 @@
 # Robot Chess Player
 
 [![ROS 2 Humble](https://img.shields.io/badge/ROS%202-Humble-22314E?logo=ros&logoColor=white)](https://docs.ros.org/en/humble/)
-[![Gazebo Harmonic](https://img.shields.io/badge/Simulator-ros__gz%20%2F%20Gazebo%20Harmonic-4A90E2)](https://gazebosim.org/)
+[![Isaac Sim 4.2](https://img.shields.io/badge/Simulator-Isaac%20Sim%204.2-4A90E2)](https://developer.nvidia.com/isaac/sim)
 [![MoveIt 2](https://img.shields.io/badge/Motion-MoveIt%202-6C63FF)](https://moveit.ros.org/)
 [![Chess Stack](https://img.shields.io/badge/Reasoning-Stockfish%20%2B%20DQN-2E8B57)](#current-scope)
 [![Status](https://img.shields.io/badge/Status-Active%20Prototype-F5A623)](#current-scope)
@@ -9,12 +9,14 @@
 
 Robot Chess Player is a ROS 2 Humble research prototype for autonomous chess manipulation with Franka Panda robots. The project is building toward a full end-to-end loop where vision reconstructs board state in FEN, high-level players choose legal moves, and MoveIt 2 plans physical pick-and-place actions in simulation.
 
+This branch is the active **Isaac Sim pivot**. We are reusing the ROS, MoveIt, perception, and gameplay systems already built in the repo while replacing the simulator backend with **Isaac Sim 4.2.0**, following the same version family used in Ekumen's AR4 Isaac work.
+
 The longer-term goal is a dual-robot match:
 
 - white side driven by a traditional chess engine
 - black side driven by a DQN-based reinforcement learning player
 - both robots taking turns from the same perceived board state
-- both robots executing moves through MoveIt and `ros_gz`
+- both robots executing moves through MoveIt and Isaac Sim
 
 ## Problem Statement
 
@@ -40,18 +42,18 @@ The workspace is split into two ROS packages:
 - `chess_manipulator_msgs/`
   - generated ROS 2 interfaces for chess move execution and engine queries
 
-### ROS GZ simulation path
+### Isaac pivot status
 
-The active simulator target is `ros_gz` / Gazebo Harmonic.
+The repo is in the middle of replacing the earlier `ros_gz` backend with an Isaac-native path.
 
-Built so far:
+Built so far on this branch:
 
-- ROS GZ launch path and world bringup
-- Franka Panda spawn path for simulation
-- STL chess-piece model packaging
-- overhead camera in the Gazebo world
-- joint-state bridging and trajectory execution shim
-- a single-robot `demo_turn` execution path
+- project-local Isaac Sim 4.2 native install convention
+- Isaac launcher script that prefers the workspace-local install
+- compatibility layer for both `omni.isaac.*` and newer `isaacsim.*` Python namespaces
+- standalone Isaac app scaffold under `repo/isaac_app`
+- ROS-side Isaac bridge and Panda playback path
+- Panda-first pivot plan and setup docs
 
 ### Motion planning and robot execution
 
@@ -101,14 +103,15 @@ What works today:
 
 - ROS 2 workspace builds cleanly
 - custom message package builds cleanly
-- `ros_gz` world and Panda stack launch
-- MoveIt 2 initializes and plans
-- `demo_turn` can execute through the single-robot pipeline
+- ROS 2 workspace builds cleanly
+- Isaac-side app scaffold is launchable through the repo script once Isaac 4.2 is installed locally
+- MoveIt 2 and the chess stack remain intact on the ROS side
 - coordinator scaffold can alternate reasoning backends
 - benchmark and RL scaffold code runs
 
 What is still in progress:
 
+- full Panda-in-Isaac execution path
 - stable dual-robot world execution
 - full camera-to-FEN piece-type perception
 - robust capture / attach / detach handling
@@ -142,7 +145,7 @@ Recommended environment:
 
 - Ubuntu 22.04
 - ROS 2 Humble
-- `ros_gz` / Gazebo Harmonic
+- Isaac Sim 4.2.0
 - MoveIt 2 for ROS 2 Humble
 - `python3`, `pip`, `colcon`
 - Stockfish on `PATH` or at `/usr/games/stockfish`
@@ -168,12 +171,19 @@ env PATH=/usr/bin:/bin:$PATH colcon --log-base log_sys build \
 source install_sys/setup.bash
 ```
 
-## Run The ROS GZ Demo
+## Run The Isaac Pivot Stack
 
-Launch the active simulation stack:
+Install Isaac Sim 4.2.0 locally first. The expected path is:
 
 ```bash
-./repo/scripts/run_ros_gz_demo.sh
+./third_party/isaac-sim-4.2.0
+```
+
+Then launch the Isaac app:
+
+```bash
+cd repo
+./scripts/run_isaac_demo.sh
 ```
 
 In a second terminal:
@@ -181,15 +191,18 @@ In a second terminal:
 ```bash
 source /opt/ros/humble/setup.bash
 source install_sys/setup.bash
+ros2 launch chess_manipulator bringup.launch.py sim_backend:=isaac
+```
+
+In a third terminal:
+
+```bash
+source /opt/ros/humble/setup.bash
+source install_sys/setup.bash
 ros2 run chess_manipulator demo_turn --think-time 0.25
 ```
 
-That currently exercises the single-robot path with:
-
-- engine move selection
-- MoveIt planning
-- Gazebo execution
-- board-state update
+Detailed native setup notes live in [repo/docs/isaac_setup.md](./repo/docs/isaac_setup.md).
 
 ## Run The Coordinator
 
@@ -249,7 +262,7 @@ ros2 run chess_manipulator rl_train \
 ## Technical Highlights
 
 - ROS 2 action / service control interfaces for chess move execution
-- `ros_gz` simulation-first architecture
+- Isaac Sim pivot with Panda-first backend compatibility
 - MoveIt 2 integration for Panda arm planning
 - board-state and FEN utilities
 - dual-player coordinator scaffold
