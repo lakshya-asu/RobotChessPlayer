@@ -114,6 +114,16 @@ source /home/flux/Desktop/chessPlayer/install_sys/setup.bash
 ros2 launch chess_manipulator bringup.launch.py sim_backend:=isaac
 ```
 
+If you want ROS launch to start the native Isaac app process as well, use:
+
+```bash
+source /opt/ros/humble/setup.bash
+source /home/flux/Desktop/chessPlayer/install_sys/setup.bash
+ros2 launch chess_manipulator bringup.launch.py \
+  sim_backend:=isaac \
+  launch_native_isaac_app:=true
+```
+
 Run one ROS-driven move in a third terminal:
 
 ```bash

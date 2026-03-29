@@ -18,6 +18,8 @@ def generate_launch_description():
     engine_backend = LaunchConfiguration("engine_backend")
     engine_executable = LaunchConfiguration("engine_executable")
     simulate_isaac_completion = LaunchConfiguration("simulate_isaac_completion")
+    launch_native_isaac_app = LaunchConfiguration("launch_native_isaac_app")
+    isaac_headless = LaunchConfiguration("isaac_headless")
     shared_parameters = [
         os.path.join(pkg_share, "config", "digital_twin.yaml"),
         {
@@ -72,6 +74,15 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(os.path.join(pkg_share, "launch", "isaac_sim.launch.py")),
         condition=IfCondition(PythonExpression(["'", sim_backend, "' == 'isaac'"])),
     )
+    isaac_native_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(pkg_share, "launch", "isaac_native.launch.py")),
+        launch_arguments={"headless": isaac_headless}.items(),
+        condition=IfCondition(
+            PythonExpression(
+                ["'", sim_backend, "' == 'isaac' and '", launch_native_isaac_app, "' == 'true'"]
+            )
+        ),
+    )
 
     return LaunchDescription(
         [
@@ -80,12 +91,15 @@ def generate_launch_description():
             DeclareLaunchArgument("engine_backend", default_value="stockfish"),
             DeclareLaunchArgument("engine_executable", default_value=""),
             DeclareLaunchArgument("simulate_isaac_completion", default_value="false"),
+            DeclareLaunchArgument("launch_native_isaac_app", default_value="false"),
+            DeclareLaunchArgument("isaac_headless", default_value="false"),
             manager,
             white_executor,
             relay,
             gazebo_launch,
             ros_gz_launch,
             isaac_launch,
+            isaac_native_launch,
             rviz_node,
         ]
     )

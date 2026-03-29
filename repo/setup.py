@@ -37,6 +37,7 @@ setup(
         (os.path.join('share',package_name,'launch'),glob('launch/*.py')),
         (os.path.join('share',package_name,'config'),glob('config/*.yaml')),
         (os.path.join('share',package_name,'config'),glob('config/*.config')),
+        (os.path.join('share',package_name,'scripts'),glob('scripts/*.sh')),
         (os.path.join('share',package_name,'worlds'),glob('worlds/*')),
         (os.path.join('lib',package_name), glob('chess_manipulator/RobotClass.py'))
         ]+models_paths,
