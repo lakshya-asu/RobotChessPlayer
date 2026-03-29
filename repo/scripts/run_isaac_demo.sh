@@ -2,101 +2,30 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
-WORKSPACE_ROOT="$(cd -- "${REPO_ROOT}/.." && pwd)"
-PROJECT_LOCAL_ISAAC_ROOT="${WORKSPACE_ROOT}/third_party/isaac-sim-4.2.0"
+# shellcheck source=repo/scripts/isaac_env.sh
+source "${SCRIPT_DIR}/isaac_env.sh"
 
-resolve_isaac_root() {
-  if [ -n "${ISAAC_ROOT:-}" ]; then
-    printf '%s' "${ISAAC_ROOT}"
-    return
-  fi
-
-  local candidates=(
-    "${PROJECT_LOCAL_ISAAC_ROOT}"
-    "${WORKSPACE_ROOT}/isaac-sim-4.2.0"
-    "${HOME}/isaacsim-4.2.0"
-    "${HOME}/isaacsim"
-    "${HOME}/snydrone_ws/isaacsim"
-  )
-  local candidate=""
-  for candidate in "${candidates[@]}"; do
-    if [ -d "${candidate}" ]; then
-      printf '%s' "${candidate}"
-      return
-    fi
-  done
-
-  printf '%s' "${PROJECT_LOCAL_ISAAC_ROOT}"
-}
-
-ISAAC_ROOT="$(resolve_isaac_root)"
-
-if [ ! -d "${ISAAC_ROOT}" ]; then
-  cat >&2 <<EOF
-Isaac Sim not found.
-Expected path: ${PROJECT_LOCAL_ISAAC_ROOT}
-Also checked:
-  ${WORKSPACE_ROOT}/isaac-sim-4.2.0
-  ${HOME}/isaacsim-4.2.0
-  ${HOME}/isaacsim
-  ${HOME}/snydrone_ws/isaacsim
-Override with: ISAAC_ROOT=/path/to/isaac-sim-4.2.0 ./scripts/run_isaac_demo.sh
-EOF
-  exit 1
-fi
-
-sanitize_path() {
-  local path_value="$1"
-  local sanitized=""
-  local segment=""
-  local old_ifs="${IFS}"
-  IFS=':'
-  for segment in ${path_value}; do
-    case "${segment}" in
-      *miniconda*|*anaconda*)
-        continue
-        ;;
-    esac
-    if [[ -z "${sanitized}" ]]; then
-      sanitized="${segment}"
-    else
-      sanitized="${sanitized}:${segment}"
-    fi
-  done
-  IFS="${old_ifs}"
-  printf '%s' "${sanitized}"
-}
-
-resolve_bridge_root() {
-  local isaac_root="$1"
-  local candidate=""
-  for candidate in \
-    "${isaac_root}/exts/isaacsim.ros2.bridge/humble" \
-    "${isaac_root}/exts/omni.isaac.ros2_bridge/humble"
-  do
-    if [ -d "${candidate}" ]; then
-      printf '%s' "${candidate}"
-      return 0
-    fi
-  done
-  return 1
-}
+ISAAC_ROOT_RESOLVED="$(resolve_isaac_root)"
+validate_isaac_install "${ISAAC_ROOT_RESOLVED}"
+mapfile -t ISAAC_BRIDGE_PATHS < <(build_isaac_ros_bridge_paths "${ISAAC_ROOT_RESOLVED}")
+ISAAC_BRIDGE_PYTHONPATH="${ISAAC_BRIDGE_PATHS[0]}"
+ISAAC_BRIDGE_LIBRARYPATH="${ISAAC_BRIDGE_PATHS[1]}"
 
 unset CONDA_PREFIX CONDA_DEFAULT_ENV CONDA_PROMPT_MODIFIER CONDA_SHLVL
 unset CONDA_EXE CONDA_PYTHON_EXE _CE_CONDA _CE_M
 unset PYTHONHOME PYTHONSTARTUP PYTHONPATH
 
-BRIDGE_ROOT="$(resolve_bridge_root "${ISAAC_ROOT}")" || {
-  echo "Could not locate the Isaac ROS 2 bridge extension under ${ISAAC_ROOT}/exts." >&2
-  exit 1
-}
-
 export PATH="$(sanitize_path "${PATH:-}")"
-export PYTHONPATH="${BRIDGE_ROOT}/rclpy:${REPO_ROOT}"
-export LD_LIBRARY_PATH="${BRIDGE_ROOT}/lib:${LD_LIBRARY_PATH:-}"
+if [ -n "${ISAAC_BRIDGE_PYTHONPATH}" ]; then
+  export PYTHONPATH="${ISAAC_BRIDGE_PYTHONPATH// /:}:${REPO_ROOT}"
+else
+  export PYTHONPATH="${REPO_ROOT}"
+fi
+if [ -n "${ISAAC_BRIDGE_LIBRARYPATH}" ]; then
+  export LD_LIBRARY_PATH="${ISAAC_BRIDGE_LIBRARYPATH// /:}:${LD_LIBRARY_PATH:-}"
+fi
 export ROS_LOG_DIR="${ROS_LOG_DIR:-/tmp/ros_logs}"
 export ROS_HOME="${ROS_HOME:-/tmp/ros_home}"
-export ISAAC_ROOT
+export ISAAC_ROOT="${ISAAC_ROOT_RESOLVED}"
 
-exec "${ISAAC_ROOT}/python.sh" -m isaac_app --sync-board-state "$@"
+exec "${ISAAC_ROOT_RESOLVED}/python.sh" -m isaac_app --sync-board-state "$@"

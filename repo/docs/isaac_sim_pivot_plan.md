@@ -8,6 +8,24 @@
 - Default local path: `third_party/isaac-sim-4.2.0`
 - AR4 switch: only if Panda-on-Isaac becomes the real blocker
 
+## Isaac Version And Install Contract
+
+This branch targets **Isaac Sim 4.2.0** to match the Ekumen AR4 reference stack.
+
+Recommended native install location:
+
+```text
+${WORKSPACE_ROOT}/third_party/isaac-sim-4.2.0
+```
+
+Rationale:
+
+- minimizes API drift against the reference integration
+- keeps the simulator install local to this workspace instead of hidden in a home-directory path
+- makes the branch reproducible for other users
+
+The repo launch scripts now validate that install path and version by default.
+
 ## Goal
 
 Pivot the active demo path from `ros_gz` / Gazebo Harmonic to NVIDIA Isaac Sim while preserving as much of the existing stack as possible:

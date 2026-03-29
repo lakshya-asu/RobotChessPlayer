@@ -273,5 +273,5 @@ ros2 run chess_manipulator rl_train \
 ## Notes
 
 - This repo is an active prototype, not a finished research artifact yet.
-- The main path under development is `ros_gz`, not classic Gazebo or Isaac Sim.
-- The current public snapshot is intended to preserve the implemented system state before the next architecture pivot.
+- `main` preserves the `ros_gz` baseline, while `pivot/isaac-sim-panda-first` retargets the demo to Isaac Sim 4.2.0.
+- The simulator pivot keeps the Panda / MoveIt / perception / coordinator stack and replaces only the simulator backend first.

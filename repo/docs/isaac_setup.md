@@ -17,7 +17,7 @@ The native install path for this repo is:
 ${WORKSPACE_ROOT}/third_party/isaac-sim-4.2.0
 ```
 
-The launcher also accepts an override:
+The launcher validates that path by default and also accepts an override:
 
 ```bash
 ISAAC_ROOT=/path/to/isaac-sim-4.2.0 ./repo/scripts/run_isaac_demo.sh
@@ -39,6 +39,13 @@ mv "${WORKSPACE_ROOT}/third_party/isaac-sim" "${WORKSPACE_ROOT}/third_party/isaa
 
 ```bash
 ls "${WORKSPACE_ROOT}/third_party/isaac-sim-4.2.0/python.sh"
+```
+
+4. Verify the repo sees the install:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+./repo/scripts/check_isaac_install.sh
 ```
 
 ## Why 4.2.0
@@ -128,5 +135,5 @@ The simulator pivot is not complete yet. The remaining manual / implementation w
 ## Notes
 
 - `run_isaac_demo.sh` strips Conda state before launching Isaac. Keep using it instead of launching `python.sh` manually.
-- The launcher defaults to the workspace-local Isaac install path first and only falls back to the older home-directory location if it already exists.
+- The launcher now defaults only to the workspace-local Isaac 4.2.0 path unless you override `ISAAC_ROOT`.
 - This doc is the native install path for the pivot branch. The older ROS GZ instructions no longer describe the intended simulator target.

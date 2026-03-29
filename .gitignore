@@ -18,3 +18,6 @@ repo/__pycache__/
 repo/chess_manipulator/__pycache__/
 
 .DS_Store
+
+third_party/
+isaac-sim-4.2.0/

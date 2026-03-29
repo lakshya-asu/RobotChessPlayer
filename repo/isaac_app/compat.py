@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 ISAAC_API_FLAVOR = "unknown"
+ROS2_BRIDGE_EXTENSION_NAMES = ()
 
 try:
     from isaacsim import SimulationApp
@@ -24,7 +25,7 @@ try:
     from isaacsim.storage.native import get_assets_root_path
 
     ISAAC_API_FLAVOR = "isaacsim"
-    ROS2_BRIDGE_EXTENSION = "isaacsim.ros2.bridge"
+    ROS2_BRIDGE_EXTENSION_NAMES = ("isaacsim.ros2.bridge", "omni.isaac.ros2_bridge")
 except ImportError:
     from omni.isaac.kit import SimulationApp
     from omni.isaac.core import World
@@ -45,9 +46,17 @@ except ImportError:
     from omni.isaac.nucleus import get_assets_root_path
 
     ISAAC_API_FLAVOR = "omni.isaac"
-    ROS2_BRIDGE_EXTENSION = "omni.isaac.ros2_bridge"
+    ROS2_BRIDGE_EXTENSION_NAMES = ("omni.isaac.ros2_bridge", "isaacsim.ros2.bridge")
 
 
 def enable_ros2_bridge() -> None:
     """Enable the Isaac ROS 2 bridge using the active API flavor."""
-    _enable_extension(ROS2_BRIDGE_EXTENSION)
+    last_error = None
+    for extension_name in ROS2_BRIDGE_EXTENSION_NAMES:
+        try:
+            _enable_extension(extension_name)
+            return
+        except Exception as exc:  # pragma: no cover - depends on installed Isaac flavor.
+            last_error = exc
+    tried = ", ".join(ROS2_BRIDGE_EXTENSION_NAMES) or "<none>"
+    raise RuntimeError(f"Unable to enable Isaac ROS 2 bridge. Tried: {tried}") from last_error

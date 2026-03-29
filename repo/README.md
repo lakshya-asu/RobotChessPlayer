@@ -211,9 +211,9 @@ PyTorch is intentionally treated as an optional training dependency for now.
 
 ## Simulator Notes
 
-The active simulator migration target is ROS GZ. The detailed roadmap lives in [docs/ros_gz_dual_player_demo_plan.md](/home/flux/Desktop/chessPlayer/repo/docs/ros_gz_dual_player_demo_plan.md).
+The historical single-robot baseline in this workspace is ROS GZ, documented in [docs/ros_gz_dual_player_demo_plan.md](/home/flux/Desktop/chessPlayer/repo/docs/ros_gz_dual_player_demo_plan.md).
 
-The older Isaac-specific docs remain in [docs/isaac_setup.md](/home/flux/Desktop/chessPlayer/repo/docs/isaac_setup.md) as reference material while the repo transitions away from the old simulator path.
+The active pivot branch now targets Isaac Sim 4.2.0 with the Franka Panda still preserved as the robot model. The native install and launcher contract are documented in [docs/isaac_setup.md](/home/flux/Desktop/chessPlayer/repo/docs/isaac_setup.md).
 
 ## Assets
 
