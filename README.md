@@ -1,49 +1,143 @@
-# Chess Manipulator Digital Twin
+<p align="center">
+  <img src="docs/chess-hero.png" alt="RobotChessPlayer hero image" width="900" />
+</p>
 
-A ROS 2 portfolio project that is now pivoting into an Isaac Sim 4.2-first chess manipulation stack with:
+<h1 align="center">RobotChessPlayer</h1>
 
-- engine-backed move selection
-- a dual-player coordinator for engine-vs-learned-player matches
-- MoveIt-backed staged pick-and-place planning
-- ROS 2 action/service control interfaces
-- an overhead camera, board-pose anchoring, and FEN perception pipeline
-- STL-based physical chess pieces in the active world
-- campaign logging, offline checkpoint promotion, and summary metrics
-- Isaac Sim 4.2 as the active simulator path
+<p align="center">
+  Dual-Panda robotic chess in ROS 2 Humble, MoveIt 2, and Isaac Sim 4.2
+</p>
 
-## Project Achievements
+<p align="center">
+  <img src="https://img.shields.io/badge/ROS%202-Humble-22314E?logo=ros&logoColor=white" alt="ROS 2 Humble" />
+  <img src="https://img.shields.io/badge/Isaac%20Sim-4.2-76B900?logo=nvidia&logoColor=white" alt="Isaac Sim 4.2" />
+  <img src="https://img.shields.io/badge/MoveIt-2-005571" alt="MoveIt 2" />
+  <img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white" alt="Python 3.10" />
+  <img src="https://img.shields.io/badge/Learned%20Player-DQN%20Campaigns-8A2BE2" alt="Learned Player Campaigns" />
+</p>
 
-- Developed a digital twin of a Franka Panda robotic arm for chess manipulation with a simulator-first ROS 2 workflow.
-- Implemented deterministic trajectory generation for collision-aware pick-and-place motion across standard chess moves, captures, castling, and promotion.
-- Built a ROS-based control interface with engine move selection, execution actions, board-state publication, and simulator bridge topics.
-- Added open-source chess engine comparison and robotics-stack benchmark tooling for portfolio reporting.
-- Added a live Isaac HUD that renders the accepted board state from FEN during runtime.
-- Added a learned-player operator path with baseline training, promoted checkpoints, offline retraining, and long-run campaign orchestration.
+<p align="center">
+  <a href="#what-this-is">What This Is</a> •
+  <a href="#implemented-now">Implemented Now</a> •
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#campaigns-and-learning">Campaigns and Learning</a> •
+  <a href="#architecture">Architecture</a>
+</p>
+
+## What This Is
+
+RobotChessPlayer is a simulation-first robotics project for autonomous chess manipulation. Two Franka Panda arms sit on opposite sides of a shared board in Isaac Sim, perceive the game state, plan staged motions with MoveIt 2, and execute alternating turns through a ROS 2 coordinator.
+
+The current system is built around three ideas:
+
+- a physical dual-robot chess scene in Isaac Sim 4.2
+- a perception pipeline that publishes board pose, confidence, and FEN
+- a learned-player workflow where the black side improves offline between batches of matches
+
+White plays with a classical engine. Black plays with a learned checkpoint behind the same FEN-in / UCI-out interface, so the coordinator does not care whether the move source is Stockfish or the RL policy.
+
+## Implemented Now
+
+- Dual Franka Panda scene in Isaac Sim 4.2 with side-specific execution and inactive-arm parking
+- ROS 2 Humble + MoveIt 2 motion planning with staged trajectories for chess moves
+- Runtime coordinator for white-vs-black matches
+- Perception topics for:
+  - `/perception/observed_fen`
+  - `/perception/fen_confidence`
+  - `/perception/board_pose`
+- Isaac GUI HUD showing the current board reconstructed from accepted FEN
+- Learned-player baseline training, checkpoint promotion, offline retraining, and campaign summaries
+- Long-run campaign runner with milestone videos at games `1, 50, 100, ...`
+
+## Quickstart
+
+Build the workspace with system Python:
+
+```bash
+source /opt/ros/humble/setup.bash
+env PATH=/usr/bin:/bin:$PATH colcon --log-base log_sys build \
+  --build-base build_sys \
+  --install-base install_sys \
+  --cmake-args -DPython3_EXECUTABLE=/usr/bin/python3
+source /home/flux/Desktop/chessPlayer/install_sys/setup.bash
+```
+
+Run the short learned-player demo:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+./repo/scripts/run_engine_vs_learned_demo.sh
+```
+
+Run one full game to completion:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+MATCH_FORMAT=full ./repo/scripts/run_engine_vs_learned_demo.sh
+```
+
+Train and promote a baseline learned checkpoint:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+./repo/scripts/train_baseline_learned_player.sh
+```
+
+## Campaigns And Learning
+
+Short-format batch run:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+MATCH_FORMAT=short TOTAL_GAMES=200 BATCH_SIZE=50 THINK_TIME_SEC=0.1 ./repo/scripts/run_learning_campaign.sh
+```
+
+Full-game batch run:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+MATCH_FORMAT=full TOTAL_GAMES=50 BATCH_SIZE=10 THINK_TIME_SEC=0.1 ./repo/scripts/run_learning_campaign.sh
+```
+
+Full 2000-game learning campaign with milestone videos and offline updates every 50 games:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+CAMPAIGN_ID=learned_2000_full \
+MATCH_FORMAT=full \
+TOTAL_GAMES=2000 \
+BATCH_SIZE=50 \
+THINK_TIME_SEC=0.1 \
+CAPTURE_MILESTONES=1 \
+./repo/scripts/run_learning_campaign.sh
+```
+
+After each batch, the pipeline can retrain, evaluate, and promote a new learned checkpoint. Campaign summaries are written as JSON and Markdown under `repo/results/campaigns/<campaign_id>/`.
 
 ## Architecture
 
-The workspace is intentionally split into two packages:
+The workspace is intentionally split into two ROS packages:
 
 - `repo/`
   - `chess_manipulator` as the main `ament_python` package
-  - motion planning, engine integration, ROS nodes, launch files, benchmarks, and docs
+  - motion planning, engine integration, ROS nodes, launch files, campaign tools, and docs
 - `chess_manipulator_msgs/`
   - generated ROS 2 interfaces as a sibling `ament_cmake` package
 
-Core modules inside `chess_manipulator`:
+Main subsystems inside `chess_manipulator`:
 
 - `chess_manipulator/chess`
-  board-state management, SAN/UCI helpers, and engine integration
+  - board-state management, SAN/UCI helpers, and engine integration
 - `chess_manipulator/coordinator`
-  shared game loop scaffolding for alternating engine and DQN players
+  - alternating match loop, game logging, checkpoint-driven campaigns
 - `chess_manipulator/motion`
-  square calibration, staged motion planning, MoveIt integration, joint-limit validation, and trajectory generation
+  - board calibration, staged planning, MoveIt integration, and trajectory generation
+- `chess_manipulator/perception`
+  - board anchoring, FEN inference, confidence scoring, and debug overlays
 - `chess_manipulator/rl`
-  DQN training, inference, action-space, and board-encoding utilities
-- `chess_manipulator/sim`
-  backend topic contracts and execution-feedback helpers
+  - DQN training, inference, continual-learning utilities, and board encodings
 - `chess_manipulator/nodes`
-  chess manager, robot executor, trajectory relay, Isaac / ROS GZ bridges, and perception nodes
+  - runtime executors, bridges, coordinator node, and perception publishers
 
 ## Public ROS 2 Interfaces
 
