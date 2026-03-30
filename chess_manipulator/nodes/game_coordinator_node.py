@@ -271,8 +271,11 @@ class RuntimeGameCoordinatorNode(Node):
             turn_logs: list[PlyLog] = []
             result_code = "*"
             termination_reason = "max_plies_reached"
+            ply_index = 0
 
-            for ply_index in range(self._max_plies):
+            while True:
+                if self._max_plies > 0 and ply_index >= self._max_plies:
+                    break
                 side = side_to_move_from_fen(current_fen)
                 player = self._player_for_side(side)
                 try:
@@ -400,8 +403,13 @@ class RuntimeGameCoordinatorNode(Node):
                         termination_reason=termination_reason,
                     )
                     return
+                ply_index += 1
 
-            self._publish_status(f"match complete after {self._max_plies} plies")
+            completed_plies = len(turn_logs)
+            if self._max_plies > 0:
+                self._publish_status(f"match complete after {completed_plies} plies")
+            else:
+                self._publish_status(f"match complete without a ply cap after {completed_plies} plies")
             self._write_game_log(
                 turns=turn_logs,
                 initial_fen=self._initial_fen,

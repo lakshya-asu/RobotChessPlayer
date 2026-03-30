@@ -1,6 +1,6 @@
 # Learned-Player Demo Workflow
 
-This is the operator-facing workflow for the final short `engine vs learned player` demo.
+This is the operator-facing workflow for the final short or full `engine vs learned player` demo.
 
 ## What Counts As The Learned Player Artifact
 
@@ -58,11 +58,29 @@ cd /home/flux/Desktop/chessPlayer
 Useful overrides:
 
 ```bash
-TOTAL_GAMES=200 START_GAME=1 BATCH_SIZE=50 MAX_PLIES=8 THINK_TIME_SEC=0.1 ./repo/scripts/run_learning_campaign.sh
+MATCH_FORMAT=short TOTAL_GAMES=200 START_GAME=1 BATCH_SIZE=50 THINK_TIME_SEC=0.1 ./repo/scripts/run_learning_campaign.sh
 ```
 
 ```bash
 CAPTURE_MILESTONES=1 VIDEO_DISPLAY=:0.0 VIDEO_SIZE=1920x1080 VIDEO_FPS=30 ./repo/scripts/run_learning_campaign.sh
+```
+
+Full-game batches:
+
+```bash
+MATCH_FORMAT=full TOTAL_GAMES=50 START_GAME=1 BATCH_SIZE=10 THINK_TIME_SEC=0.1 ./repo/scripts/run_learning_campaign.sh
+```
+
+Long-run 2000-game full-game campaign:
+
+```bash
+CAMPAIGN_ID=learned_2000_full \
+MATCH_FORMAT=full \
+TOTAL_GAMES=2000 \
+BATCH_SIZE=50 \
+THINK_TIME_SEC=0.1 \
+CAPTURE_MILESTONES=1 \
+./repo/scripts/run_learning_campaign.sh
 ```
 
 ## Promote The Demo Artifact
@@ -81,7 +99,7 @@ This copies the artifact into:
 
 That promoted checkpoint is the default runtime input for the learned-player demo launcher.
 
-## Run The Short Match
+## Run The Match
 
 ```bash
 cd /home/flux/Desktop/chessPlayer
@@ -94,7 +112,8 @@ Defaults:
 - white: `stockfish`
 - black: `dqn`
 - checkpoint: promoted artifact under `results/demo/learned_player/`
-- plies: current config default in `config/digital_twin.yaml`
+- match format: `short`
+- short-format plies: `8`
 
 Useful overrides:
 
@@ -108,6 +127,12 @@ ISAAC_HEADLESS=true ./repo/scripts/run_engine_vs_learned_demo.sh
 
 ```bash
 WHITE_ENGINE_EXECUTABLE=/usr/games/stockfish ./repo/scripts/run_engine_vs_learned_demo.sh
+```
+
+Run one full game to completion:
+
+```bash
+MATCH_FORMAT=full ./repo/scripts/run_engine_vs_learned_demo.sh
 ```
 
 ## Reset State

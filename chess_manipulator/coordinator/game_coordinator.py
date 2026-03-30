@@ -66,10 +66,13 @@ class GameCoordinator:
         board = chess.Board(self._initial_fen) if self._initial_fen else chess.Board()
         turns: List[TurnRecord] = []
         termination_reason = "max_plies_reached"
+        ply_index = 0
 
-        for ply_index in range(self._max_plies):
+        while True:
             if board.is_game_over(claim_draw=True):
                 termination_reason = "game_over"
+                break
+            if self._max_plies > 0 and ply_index >= self._max_plies:
                 break
 
             fen_before = board.fen()
@@ -108,6 +111,7 @@ class GameCoordinator:
                     fen_after=board.fen(),
                 )
             )
+            ply_index += 1
 
         if board.is_game_over(claim_draw=True):
             result = board.result(claim_draw=True)

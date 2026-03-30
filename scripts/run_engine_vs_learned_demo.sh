@@ -12,6 +12,23 @@ BLACK_BACKEND="${BLACK_BACKEND:-dqn}"
 ISAAC_HEADLESS="${ISAAC_HEADLESS:-false}"
 WHITE_ENGINE_EXECUTABLE="${WHITE_ENGINE_EXECUTABLE:-}"
 BLACK_ENGINE_EXECUTABLE="${BLACK_ENGINE_EXECUTABLE:-}"
+MATCH_FORMAT="${MATCH_FORMAT:-short}"
+MATCH_MAX_PLIES="${MATCH_MAX_PLIES:-}"
+
+if [ -z "${MATCH_MAX_PLIES}" ]; then
+  case "${MATCH_FORMAT}" in
+    short)
+      MATCH_MAX_PLIES=8
+      ;;
+    full)
+      MATCH_MAX_PLIES=0
+      ;;
+    *)
+      echo "Unsupported MATCH_FORMAT: ${MATCH_FORMAT}. Use 'short' or 'full'." >&2
+      exit 1
+      ;;
+  esac
+fi
 
 if [ "${BLACK_BACKEND}" = "dqn" ] && [ ! -f "${LEARNED_CHECKPOINT}" ] && [ "${ALLOW_HEURISTIC_FALLBACK:-0}" != "1" ]; then
   cat >&2 <<EOF
@@ -54,12 +71,13 @@ printf 'Starting engine-vs-learned-player demo.\n'
 printf '  sim_backend: %s\n' "${SIM_BACKEND:-isaac}"
 printf '  white_backend: %s\n' "${WHITE_BACKEND}"
 printf '  black_backend: %s\n' "${BLACK_BACKEND}"
+printf '  match_format: %s\n' "${MATCH_FORMAT}"
+printf '  max_plies: %s\n' "${MATCH_MAX_PLIES}"
 if [ -f "${LEARNED_CHECKPOINT}" ]; then
   printf '  learned_checkpoint: %s\n' "${LEARNED_CHECKPOINT}"
 elif [ "${BLACK_BACKEND}" = "dqn" ]; then
   printf '  learned_checkpoint: not provided, heuristic fallback enabled\n'
 fi
-printf '  plies: config default (currently 8 unless config changed)\n'
 
 launch_args=(
   coordinator:=true
@@ -68,6 +86,7 @@ launch_args=(
   "isaac_headless:=${ISAAC_HEADLESS}"
   "white_backend:=${WHITE_BACKEND}"
   "black_backend:=${BLACK_BACKEND}"
+  "max_plies:=${MATCH_MAX_PLIES}"
 )
 
 if [ -n "${WHITE_ENGINE_EXECUTABLE}" ]; then

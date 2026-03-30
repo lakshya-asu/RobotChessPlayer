@@ -155,6 +155,13 @@ cd /home/flux/Desktop/chessPlayer
 ./repo/scripts/run_engine_vs_learned_demo.sh
 ```
 
+Run one full game to completion:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+MATCH_FORMAT=full ./repo/scripts/run_engine_vs_learned_demo.sh
+```
+
 Train and promote a baseline learned checkpoint:
 
 ```bash
@@ -168,6 +175,35 @@ Run the long learned-player campaign with milestone videos and every-50-game off
 cd /home/flux/Desktop/chessPlayer
 ./repo/scripts/run_learning_campaign.sh
 ```
+
+Short-format batch run:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+MATCH_FORMAT=short TOTAL_GAMES=200 BATCH_SIZE=50 THINK_TIME_SEC=0.1 ./repo/scripts/run_learning_campaign.sh
+```
+
+Full-game batch run:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+MATCH_FORMAT=full TOTAL_GAMES=50 BATCH_SIZE=10 THINK_TIME_SEC=0.1 ./repo/scripts/run_learning_campaign.sh
+```
+
+Long-run 2000-game learning campaign with offline updates every 50 games:
+
+```bash
+cd /home/flux/Desktop/chessPlayer
+CAMPAIGN_ID=learned_2000_full \
+MATCH_FORMAT=full \
+TOTAL_GAMES=2000 \
+BATCH_SIZE=50 \
+THINK_TIME_SEC=0.1 \
+CAPTURE_MILESTONES=1 \
+./repo/scripts/run_learning_campaign.sh
+```
+
+This mode plays each game until the coordinator reaches a terminal result from the accepted FEN, logs wins / draws / termination reasons, and retrains/promotes the black-side checkpoint every `BATCH_SIZE` games.
 
 Generate or refresh a metrics summary for a completed campaign:
 

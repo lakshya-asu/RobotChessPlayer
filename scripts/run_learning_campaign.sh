@@ -8,7 +8,8 @@ WORKSPACE_ROOT="$(cd -- "${REPO_ROOT}/.." && pwd)"
 TOTAL_GAMES="${TOTAL_GAMES:-2000}"
 START_GAME="${START_GAME:-1}"
 BATCH_SIZE="${BATCH_SIZE:-50}"
-MAX_PLIES="${MAX_PLIES:-8}"
+MATCH_FORMAT="${MATCH_FORMAT:-short}"
+MAX_PLIES="${MAX_PLIES:-}"
 THINK_TIME_SEC="${THINK_TIME_SEC:-0.1}"
 CAMPAIGN_ID="${CAMPAIGN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
 CAMPAIGN_ROOT="${CAMPAIGN_ROOT:-${REPO_ROOT}/results/campaigns/${CAMPAIGN_ID}}"
@@ -21,7 +22,7 @@ CAPTURE_MILESTONES="${CAPTURE_MILESTONES:-1}"
 VIDEO_DISPLAY="${VIDEO_DISPLAY:-${DISPLAY:-:0.0}}"
 VIDEO_SIZE="${VIDEO_SIZE:-1920x1080}"
 VIDEO_FPS="${VIDEO_FPS:-30}"
-GAME_TIMEOUT_SEC="${GAME_TIMEOUT_SEC:-600}"
+GAME_TIMEOUT_SEC="${GAME_TIMEOUT_SEC:-}"
 OFFLINE_OPTIMIZATION_STEPS="${OFFLINE_OPTIMIZATION_STEPS:-250}"
 SELF_PLAY_EPISODES="${SELF_PLAY_EPISODES:-0}"
 POST_SELF_PLAY_OPTIMIZATION_STEPS="${POST_SELF_PLAY_OPTIMIZATION_STEPS:-50}"
@@ -29,6 +30,29 @@ MIN_LEGAL_RATE="${MIN_LEGAL_RATE:-1.0}"
 MIN_AGREEMENT_RATE="${MIN_AGREEMENT_RATE:-0.0}"
 
 mkdir -p "${GAME_LOG_DIR}" "${RUN_LOG_DIR}" "${VIDEO_DIR}" "${OFFLINE_DIR}"
+
+if [ -z "${MAX_PLIES}" ]; then
+  case "${MATCH_FORMAT}" in
+    short)
+      MAX_PLIES=8
+      ;;
+    full)
+      MAX_PLIES=0
+      ;;
+    *)
+      echo "Unsupported MATCH_FORMAT: ${MATCH_FORMAT}. Use 'short' or 'full'." >&2
+      exit 1
+      ;;
+  esac
+fi
+
+if [ -z "${GAME_TIMEOUT_SEC}" ]; then
+  if [ "${MATCH_FORMAT}" = "full" ] || [ "${MAX_PLIES}" -le 0 ]; then
+    GAME_TIMEOUT_SEC=5400
+  else
+    GAME_TIMEOUT_SEC=600
+  fi
+fi
 
 if [ ! -f "${PROMOTED_CHECKPOINT}" ]; then
   echo "Promoted checkpoint not found: ${PROMOTED_CHECKPOINT}" >&2
@@ -140,9 +164,10 @@ run_single_game() {
     SIM_BACKEND=isaac \
     ISAAC_HEADLESS="${headless}" \
     LEARNED_CHECKPOINT="${PROMOTED_CHECKPOINT}" \
+    MATCH_FORMAT="${MATCH_FORMAT}" \
+    MATCH_MAX_PLIES="${MAX_PLIES}" \
     "${REPO_ROOT}/scripts/run_engine_vs_learned_demo.sh" \
     game_log_dir:="${GAME_LOG_DIR}" \
-    max_plies:="${MAX_PLIES}" \
     think_time_sec:="${THINK_TIME_SEC}" \
     >"${run_log}" 2>&1 &
   DEMO_PID=$!
@@ -206,8 +231,10 @@ printf 'Starting learned-player campaign.\n'
 printf '  start_game:         %s\n' "${START_GAME}"
 printf '  total_games:        %s\n' "${TOTAL_GAMES}"
 printf '  batch_size:         %s\n' "${BATCH_SIZE}"
+printf '  match_format:       %s\n' "${MATCH_FORMAT}"
 printf '  max_plies:          %s\n' "${MAX_PLIES}"
 printf '  think_time_sec:     %s\n' "${THINK_TIME_SEC}"
+printf '  game_timeout_sec:   %s\n' "${GAME_TIMEOUT_SEC}"
 printf '  campaign_root:      %s\n' "${CAMPAIGN_ROOT}"
 printf '  promoted_checkpoint:%s\n' "${PROMOTED_CHECKPOINT}"
 
