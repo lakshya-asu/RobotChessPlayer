@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="black_queen">
+    <static>false</static>
+    <link name="piece">
+      <inertial>
+        <mass>0.060</mass>
+        <inertia>
+          <ixx>0.000020</ixx>
+          <iyy>0.000020</iyy>
+          <izz>0.000012</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <pose>0 0 0.0325 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.016</radius>
+            <length>0.065</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://chess_piece_meshes/meshes/queen.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.16 0.16 0.18 1</ambient>
+          <diffuse>0.16 0.16 0.18 1</diffuse>
+          <specular>0.08 0.08 0.08 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

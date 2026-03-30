@@ -1,0 +1,67 @@
+/**:
+  ros__parameters:
+    sim_backend: isaac
+    engine_backend: stockfish
+    engine_executable: ""
+    engine_think_time_sec: 0.25
+    square_size_m: 0.076
+    board_origin: [0.235, -0.266, 0.31]
+    hover_height_m: 0.12
+    pickup_height_m: 0.015
+    move_time_sec: 1.0
+    execution_timeout_sec: 45.0
+    planner_backend: moveit
+    white_executor_action_name: /white/execute_move
+    black_executor_action_name: /black/execute_move
+    white_planned_trajectory_topic: /white/planned_trajectory
+    black_planned_trajectory_topic: /black/planned_trajectory
+    white_execution_feedback_topic: /white/execution_feedback
+    black_execution_feedback_topic: /black/execution_feedback
+    planned_trajectory_topic: /white/planned_trajectory
+    execution_feedback_topic: /white/execution_feedback
+    white_backend: stockfish
+    black_backend: dqn
+    white_engine_executable: ""
+    black_engine_executable: ""
+    white_dqn_checkpoint: ""
+    black_dqn_checkpoint: ""
+    current_fen_topic: /game/current_fen
+    status_topic: /game/status
+    observed_fen_topic: /perception/observed_fen
+    fen_confidence_topic: /perception/fen_confidence
+    board_pose_topic: /perception/board_pose
+    use_observed_fen: true
+    require_perception_confirmation: false
+    require_board_pose_confirmation: true
+    perception_confidence_threshold: 0.65
+    perception_verification_timeout_sec: 5.0
+    board_pose_max_age_sec: 1.0
+    parking_move_time_sec: 2.5
+    white_parking_joint_positions: [1.35, -1.05, 0.0, -2.2, 0.0, 2.15, 0.8]
+    black_parking_joint_positions: [-1.35, -1.05, 0.0, -2.2, 0.0, 2.15, 0.8]
+    game_log_dir: /home/flux/Desktop/chessPlayer/repo/results/game_logs
+    max_plies: 8
+    home_joint_positions: [0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785]
+    home_move_time_sec: 2.0
+    isaac_execution_result_topic: /isaac/execution_result
+    simulate_isaac_completion: false
+    isaac_completion_padding_sec: 0.05
+    image_topic: /perception/camera/image_raw
+    camera_info_topic: /perception/camera/camera_info
+    segmentation_topic: /perception/camera/segmentation
+    observed_fen_topic: /perception/observed_fen
+    fen_confidence_topic: /perception/fen_confidence
+    occupancy_topic: /perception/board_occupancy
+    debug_image_topic: /perception/debug/annotated_image
+    crop_normalized: [0.225, 0.225, 0.775, 0.775]
+    resize_px: 800
+    occupancy_threshold: 0.18
+    commit_confidence_threshold: 0.65
+    signal_threshold: 0.02
+    use_segmentation_mask: true
+    segmentation_weight: 0.7
+    segmentation_max_age_sec: 0.25
+    publish_debug_image: true
+    use_aruco_anchor: true
+    aruco_marker_id: 23
+    aruco_dictionary: DICT_4X4_50

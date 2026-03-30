@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="black_king">
+    <static>false</static>
+    <link name="piece">
+      <inertial>
+        <mass>0.065</mass>
+        <inertia>
+          <ixx>0.000022</ixx>
+          <iyy>0.000022</iyy>
+          <izz>0.000013</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <pose>0 0 0.0375 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.016</radius>
+            <length>0.075</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="body">
+        <geometry>
+          <mesh>
+            <uri>model://chess_piece_meshes/meshes/king-body.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.16 0.16 0.18 1</ambient>
+          <diffuse>0.16 0.16 0.18 1</diffuse>
+          <specular>0.08 0.08 0.08 1</specular>
+        </material>
+      </visual>
+      <visual name="cross">
+        <geometry>
+          <mesh>
+            <uri>model://chess_piece_meshes/meshes/king-cross.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.16 0.16 0.18 1</ambient>
+          <diffuse>0.16 0.16 0.18 1</diffuse>
+          <specular>0.08 0.08 0.08 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

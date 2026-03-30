@@ -1,0 +1,39 @@
+{
+  "checkpoint": "/home/flux/Desktop/chessPlayer/repo/results/training/baseline/black_dqn.pt",
+  "events": [
+    {
+      "payload": {
+        "batch_size": 64,
+        "buffer_size": 7408,
+        "episodes": 200,
+        "gamma": 0.99,
+        "history": {
+          "episodes": 200,
+          "mean_reward": -25.605,
+          "steps": 7408,
+          "update_steps": 7159
+        },
+        "learning_rate": 0.001,
+        "target_sync_steps": 100,
+        "warmup_steps": 250
+      },
+      "timestamp": "2026-03-30T18:27:54Z",
+      "type": "trained"
+    }
+  ],
+  "training": {
+    "batch_size": 64,
+    "buffer_size": 7408,
+    "episodes": 200,
+    "gamma": 0.99,
+    "history": {
+      "episodes": 200,
+      "mean_reward": -25.605,
+      "steps": 7408,
+      "update_steps": 7159
+    },
+    "learning_rate": 0.001,
+    "target_sync_steps": 100,
+    "warmup_steps": 250
+  }
+}

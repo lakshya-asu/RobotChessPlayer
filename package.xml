@@ -2,17 +2,38 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>chess_manipulator</name>
-  <version>0.0.0</version>
-  <description>Franka Emika Panda manipulator playing chess</description>
-  <maintainer email="zein.barhoum799@gmail.com">Zein Alabedeen Barhoum</maintainer>
-  <maintainer email="rahafalshaowa98@gmail.com">Rahaf Alshaowa</maintainer>
-  <license>Apache License 2.0</license>
+  <version>0.1.0</version>
+  <description>ROS GZ-first ROS 2 chess manipulator digital twin with legacy simulator compatibility.</description>
 
+  <maintainer email="lakshya-asu@users.noreply.github.com">Lakshya Jain</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>ament_index_python</depend>
+  <depend>chess_manipulator_msgs</depend>
+  <depend>control_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  <depend>moveit_resources_panda_moveit_config</depend>
+  <depend>moveit_msgs</depend>
+  <depend>moveit_ros_move_group</depend>
+  <depend>moveit_simple_controller_manager</depend>
   <depend>rclpy</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>ros_gz_bridge</depend>
+  <depend>ros_gz_sim</depend>
   <depend>ros2_control</depend>
   <depend>ros2_controllers</depend>
-  <depend>gazebo-ros2-control</depend>
-  
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>xacro</depend>
+
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>

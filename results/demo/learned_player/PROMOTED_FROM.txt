@@ -1,0 +1,3 @@
+source_checkpoint=/home/flux/Desktop/chessPlayer/repo/results/training/baseline/black_dqn.pt
+source_metadata=/home/flux/Desktop/chessPlayer/repo/results/training/baseline/black_dqn.pt.metadata.json
+promoted_at_utc=2026-03-30T18:27:55Z

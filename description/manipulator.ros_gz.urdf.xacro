@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
+
+  <link name="world" />
+
+  <xacro:include filename="$(find chess_manipulator)/description/panda_arm.xacro" />
+  <xacro:include filename="$(find chess_manipulator)/description/panda_hand.xacro" />
+  <xacro:include filename="$(find chess_manipulator)/description/manipulator.ros_gz_control.xacro" />
+
+  <xacro:panda_arm base_xyz="0.501 -0.620 0.30" />
+  <xacro:panda_hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8" />
+
+</robot>

@@ -46,7 +46,7 @@
   </xacro:macro>
 
   <xacro:macro name="panda_arm"
-    params="arm_id:='panda' description_pkg:='chess_manipulator' connected_to:='' xyz:='0 0 0' rpy:='0 0 0'">
+    params="arm_id:='panda' description_pkg:='chess_manipulator' connected_to:='' xyz:='0 0 0' rpy:='0 0 0' base_xyz:='0 0 0' base_rpy:='0 0 0'">
     <xacro:unless value="${not connected_to}">
       <joint name="${arm_id}_joint_${connected_to}" type="fixed">
         <parent link="${connected_to}" />
@@ -61,19 +61,19 @@
     <joint name="robot_to_world" type="fixed">
       <parent link="world" />
       <child link="${arm_id}_link0" />
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <origin xyz="${base_xyz}" rpy="${base_rpy}" />
       <dynamics damping="${joint_damping}" />
     </joint>
 
     <link name="${arm_id}_link0">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link0.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link0.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link0.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link0.stl" />
         </geometry>
       </collision>
       <inertial>
@@ -85,12 +85,12 @@
     <link name="${arm_id}_link1">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link1.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link1.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link1.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link1.stl" />
         </geometry>
       </collision>
       <inertial>
@@ -114,12 +114,12 @@
     <link name="${arm_id}_link2">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link2.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link2.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link2.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link2.stl" />
         </geometry>
       </collision>
       <inertial>
@@ -143,18 +143,18 @@
     <link name="${arm_id}_link3">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link3.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link3.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link3.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link3.stl" />
         </geometry>
       </collision>
       <inertial>
         <origin xyz="${link3_cog}" rpy="0 0 0" />
         <mass value="${mass_link3}" />
-        <inertia ixx="0.00716" ixy="-0.00102" ixz="-0.02040" iyy="0.00920" iyz="-0.00102"
+        <inertia ixx="0.00716" ixy="0.0" ixz="0.0" iyy="0.00920" iyz="0.0"
           izz="0.007159" />
       </inertial>
     </link>
@@ -173,12 +173,12 @@
     <link name="${arm_id}_link4">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link4.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link4.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link4.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link4.stl" />
         </geometry>
       </collision>
       <inertial>
@@ -203,18 +203,18 @@
     <link name="${arm_id}_link5">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link5.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link5.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link5.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link5.stl" />
         </geometry>
       </collision>
       <inertial>
         <origin xyz="${link5_cog}" rpy="0 0 0" />
         <mass value="${mass_link5}" />
-        <inertia ixx="0.0307" ixy="0.0" ixz="0.0" iyy="0.02761" iyz="-0.0613" izz="0.00818" />
+        <inertia ixx="0.0307" ixy="0.0" ixz="0.0" iyy="0.02761" iyz="0.0" izz="0.00818" />
       </inertial>
     </link>
     <joint
@@ -232,12 +232,12 @@
     <link name="${arm_id}_link6">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link6.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link6.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link6.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link6.stl" />
         </geometry>
       </collision>
       <inertial>
@@ -261,12 +261,12 @@
     <link name="${arm_id}_link7">
       <visual>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/visual/link7.dae" />
+          <mesh filename="package://chess_manipulator/meshes/visual/link7.dae" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="file://$(find chess_manipulator)/meshes/collision/link7.stl" />
+          <mesh filename="package://chess_manipulator/meshes/collision/link7.stl" />
         </geometry>
       </collision>
       <inertial>

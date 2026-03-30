@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
+  <xacro:macro
+    name="panda_joint_position_controller"
+    params="joint_name topic_name p_gain i_gain d_gain cmd_limit">
+    <plugin
+      filename="gz-sim-joint-position-controller-system"
+      name="gz::sim::systems::JointPositionController">
+      <joint_name>${joint_name}</joint_name>
+      <topic>${topic_name}</topic>
+      <p_gain>${p_gain}</p_gain>
+      <i_gain>${i_gain}</i_gain>
+      <d_gain>${d_gain}</d_gain>
+      <i_min>${-cmd_limit}</i_min>
+      <i_max>${cmd_limit}</i_max>
+      <cmd_min>${-cmd_limit}</cmd_min>
+      <cmd_max>${cmd_limit}</cmd_max>
+    </plugin>
+  </xacro:macro>
+
+  <gazebo>
+    <plugin
+      filename="gz-sim-joint-state-publisher-system"
+      name="gz::sim::systems::JointStatePublisher" />
+
+    <xacro:panda_joint_position_controller
+      joint_name="panda_joint1"
+      topic_name="panda_joint1_position_cmd"
+      p_gain="500.0"
+      i_gain="25.0"
+      d_gain="35.0"
+      cmd_limit="1200.0" />
+    <xacro:panda_joint_position_controller
+      joint_name="panda_joint2"
+      topic_name="panda_joint2_position_cmd"
+      p_gain="800.0"
+      i_gain="40.0"
+      d_gain="55.0"
+      cmd_limit="1800.0" />
+    <xacro:panda_joint_position_controller
+      joint_name="panda_joint3"
+      topic_name="panda_joint3_position_cmd"
+      p_gain="450.0"
+      i_gain="20.0"
+      d_gain="30.0"
+      cmd_limit="1200.0" />
+    <xacro:panda_joint_position_controller
+      joint_name="panda_joint4"
+      topic_name="panda_joint4_position_cmd"
+      p_gain="900.0"
+      i_gain="45.0"
+      d_gain="65.0"
+      cmd_limit="2000.0" />
+    <xacro:panda_joint_position_controller
+      joint_name="panda_joint5"
+      topic_name="panda_joint5_position_cmd"
+      p_gain="220.0"
+      i_gain="10.0"
+      d_gain="18.0"
+      cmd_limit="700.0" />
+    <xacro:panda_joint_position_controller
+      joint_name="panda_joint6"
+      topic_name="panda_joint6_position_cmd"
+      p_gain="220.0"
+      i_gain="10.0"
+      d_gain="18.0"
+      cmd_limit="700.0" />
+    <xacro:panda_joint_position_controller
+      joint_name="panda_joint7"
+      topic_name="panda_joint7_position_cmd"
+      p_gain="180.0"
+      i_gain="8.0"
+      d_gain="15.0"
+      cmd_limit="500.0" />
+  </gazebo>
+</robot>
