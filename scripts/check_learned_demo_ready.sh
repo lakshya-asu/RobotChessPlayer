@@ -23,32 +23,31 @@ source "${WORKSPACE_ROOT}/install_sys/setup.bash"
 set -u
 
 resolve_engine() {
-  local configured="$1"
-  if [ -n "${configured}" ]; then
-    if [ ! -x "${configured}" ]; then
-      echo "Engine executable is not runnable: ${configured}" >&2
-      exit 1
-    fi
-    printf '%s\n' "${configured}"
-    return 0
-  fi
-  if command -v stockfish >/dev/null 2>&1; then
-    command -v stockfish
-    return 0
-  fi
-  if [ -x /usr/games/stockfish ]; then
-    printf '%s\n' "/usr/games/stockfish"
-    return 0
-  fi
-  echo "Unable to find a Stockfish executable on PATH or /usr/games/stockfish." >&2
-  exit 1
+  local backend="$1"
+  local configured="$2"
+  env PATH=/usr/bin:/bin:$PATH REPO_ROOT="${REPO_ROOT}" /usr/bin/python3 - <<'PY' "${backend}" "${configured}"
+import os
+import sys
+from pathlib import Path
+
+repo_root = Path(os.environ["REPO_ROOT"])
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
+
+from chess_manipulator.chess.engine import ChessEngineAdapter, EngineConfig
+
+backend = sys.argv[1]
+configured = sys.argv[2] or None
+adapter = ChessEngineAdapter(EngineConfig(backend=backend, executable=configured))
+print(adapter.resolve_executable())
+PY
 }
 
 if [ "${WHITE_BACKEND}" = "stockfish" ]; then
-  WHITE_ENGINE_EXECUTABLE="$(resolve_engine "${WHITE_ENGINE_EXECUTABLE}")"
+  WHITE_ENGINE_EXECUTABLE="$(resolve_engine "stockfish" "${WHITE_ENGINE_EXECUTABLE}")"
 fi
 if [ "${BLACK_BACKEND}" = "stockfish" ]; then
-  BLACK_ENGINE_EXECUTABLE="$(resolve_engine "${BLACK_ENGINE_EXECUTABLE}")"
+  BLACK_ENGINE_EXECUTABLE="$(resolve_engine "stockfish" "${BLACK_ENGINE_EXECUTABLE}")"
 fi
 
 if [ "${BLACK_BACKEND}" = "dqn" ] && [ -n "${LEARNED_CHECKPOINT}" ]; then

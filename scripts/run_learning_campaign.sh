@@ -69,6 +69,13 @@ is_milestone() {
 
 start_video_capture() {
   local output_path="$1"
+  local window_id=""
+  local geometry=""
+  local x=""
+  local y=""
+  local width=""
+  local height=""
+  local attempts=0
   if [ "${CAPTURE_MILESTONES}" != "1" ]; then
     return 0
   fi
@@ -76,11 +83,36 @@ start_video_capture() {
     echo "ffmpeg not found; skipping video capture." >&2
     return 0
   fi
+  if ! command -v xwininfo >/dev/null 2>&1; then
+    echo "xwininfo not found; skipping video capture." >&2
+    return 0
+  fi
+  while [ "${attempts}" -lt 30 ]; do
+    window_id="$(xwininfo -root -tree 2>/dev/null | awk '/"Isaac Sim"/ {print $1; exit}')"
+    if [ -n "${window_id}" ]; then
+      break
+    fi
+    attempts=$((attempts + 1))
+    sleep 1
+  done
+  if [ -z "${window_id}" ]; then
+    echo "Isaac Sim window not found; skipping video capture." >&2
+    return 0
+  fi
+  geometry="$(xwininfo -id "${window_id}" 2>/dev/null || true)"
+  x="$(printf '%s\n' "${geometry}" | awk '/Absolute upper-left X:/ {print $4; exit}')"
+  y="$(printf '%s\n' "${geometry}" | awk '/Absolute upper-left Y:/ {print $4; exit}')"
+  width="$(printf '%s\n' "${geometry}" | awk '/Width:/ {print $2; exit}')"
+  height="$(printf '%s\n' "${geometry}" | awk '/Height:/ {print $2; exit}')"
+  if [ -z "${x}" ] || [ -z "${y}" ] || [ -z "${width}" ] || [ -z "${height}" ]; then
+    echo "Unable to resolve Isaac Sim window geometry; skipping video capture." >&2
+    return 0
+  fi
   ffmpeg -y \
-    -video_size "${VIDEO_SIZE}" \
+    -video_size "${width}x${height}" \
     -framerate "${VIDEO_FPS}" \
     -f x11grab \
-    -i "${VIDEO_DISPLAY}" \
+    -i "${VIDEO_DISPLAY}+${x},${y}" \
     -pix_fmt yuv420p \
     "${output_path}" \
     >"${output_path%.mp4}.ffmpeg.log" 2>&1 &
@@ -100,7 +132,6 @@ run_single_game() {
 
   if is_milestone "${game_index}" && [ "${CAPTURE_MILESTONES}" = "1" ]; then
     headless=false
-    start_video_capture "${VIDEO_DIR}/game_${game_index}.mp4"
   fi
 
   printf '\n=== Running game %s/%s (headless=%s) ===\n' "${game_index}" "${TOTAL_GAMES}" "${headless}"
@@ -115,6 +146,10 @@ run_single_game() {
     think_time_sec:="${THINK_TIME_SEC}" \
     >"${run_log}" 2>&1 &
   DEMO_PID=$!
+
+  if [ "${headless}" = "false" ]; then
+    start_video_capture "${VIDEO_DIR}/game_${game_index}.mp4"
+  fi
 
   while true; do
     local current_count

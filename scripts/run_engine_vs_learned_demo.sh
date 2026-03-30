@@ -61,15 +61,26 @@ elif [ "${BLACK_BACKEND}" = "dqn" ]; then
 fi
 printf '  plies: config default (currently 8 unless config changed)\n'
 
+launch_args=(
+  coordinator:=true
+  coordinator_auto_start:=true
+  launch_native_isaac_app:=true
+  "isaac_headless:=${ISAAC_HEADLESS}"
+  "white_backend:=${WHITE_BACKEND}"
+  "black_backend:=${BLACK_BACKEND}"
+)
+
+if [ -n "${WHITE_ENGINE_EXECUTABLE}" ]; then
+  launch_args+=("white_engine_executable:=${WHITE_ENGINE_EXECUTABLE}")
+fi
+if [ -n "${BLACK_ENGINE_EXECUTABLE}" ]; then
+  launch_args+=("black_engine_executable:=${BLACK_ENGINE_EXECUTABLE}")
+fi
+if [ -n "${LEARNED_CHECKPOINT}" ]; then
+  launch_args+=("black_dqn_checkpoint:=${LEARNED_CHECKPOINT}")
+fi
+
 exec env ROS_LOG_DIR=/tmp/ros_logs SIM_BACKEND="${SIM_BACKEND:-isaac}" \
   "${REPO_ROOT}/scripts/run_ros_demo.sh" \
-  coordinator:=true \
-  coordinator_auto_start:=true \
-  launch_native_isaac_app:=true \
-  isaac_headless:="${ISAAC_HEADLESS}" \
-  white_backend:="${WHITE_BACKEND}" \
-  black_backend:="${BLACK_BACKEND}" \
-  white_engine_executable:="${WHITE_ENGINE_EXECUTABLE}" \
-  black_engine_executable:="${BLACK_ENGINE_EXECUTABLE}" \
-  black_dqn_checkpoint:="${LEARNED_CHECKPOINT}" \
+  "${launch_args[@]}" \
   "${@}"
